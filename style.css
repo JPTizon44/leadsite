@@ -2040,3 +2040,26 @@ body {
     line-height: 1.5;
 }
 
+/* -------------------------------------------------------------
+   CLOUD SYNC ANIMATIONS & STATUS STYLES
+   ------------------------------------------------------------- */
+@keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.spin-anim {
+    animation: spinSlow 1s linear infinite;
+}
+
+.status-indicator.syncing .status-dot {
+    background-color: var(--warning);
+    box-shadow: 0 0 10px var(--warning-glow);
+}
+
+.status-indicator.offline .status-dot {
+    background-color: var(--danger);
+    box-shadow: 0 0 10px var(--danger-glow);
+}
+
+
