@@ -50,11 +50,11 @@
             </nav>
 
             <div class="sidebar-footer">
-                <div class="status-indicator online">
+                <div class="status-indicator online" id="sidebar-cloud-status">
                     <span class="status-dot"></span>
-                    <span class="status-text">Modo Estático Ativo</span>
+                    <span class="status-text" id="sidebar-cloud-text">Nuvem Conectada</span>
                 </div>
-                <p class="footer-version">v1.2.0 (GitHub Ready)</p>
+                <p class="footer-version">v1.3.0 (Real-Time Cloud Sync)</p>
             </div>
         </aside>
 
@@ -66,9 +66,9 @@
             <div class="brand-text">
                 <h1>Lead<span>Finder</span></h1>
             </div>
-            <div class="status-indicator online">
+            <div class="status-indicator online" id="mobile-cloud-status">
                 <span class="status-dot"></span>
-                <span class="status-text">Online</span>
+                <span class="status-text" id="mobile-cloud-text">Nuvem Conectada</span>
             </div>
         </div>
 
@@ -82,6 +82,10 @@
                     <p id="page-description">Visão geral do seu banco de leads de e-commerce.</p>
                 </div>
                 <div class="header-actions">
+                    <button class="btn btn-secondary" id="btn-sync-cloud" title="Forçar sincronização com a nuvem">
+                        <i data-lucide="refresh-cw" id="icon-sync-spin"></i>
+                        <span id="label-sync-btn">Sincronizar Nuvem</span>
+                    </button>
                     <button class="btn btn-secondary" id="btn-import-leads">
                         <i data-lucide="upload"></i>
                         <span>Importar Backup</span>
