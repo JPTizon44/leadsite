@@ -156,6 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
     safeAddListener("btn-close-manual-modal", "click", closeManualLeadModal);
     safeAddListener("btn-cancel-manual", "click", closeManualLeadModal);
     safeAddListener("btn-submit-manual", "click", handleAddManualLead);
+    safeAddListener("manual-lead-form", "submit", handleAddManualLead);
 
     // Detail Modal Handlers
     safeAddListener("btn-close-modal", "click", closeDetailsModal);
@@ -718,13 +719,17 @@ function closeManualLeadModal() {
     document.getElementById("manual-lead-modal").classList.remove("active");
 }
 
-function handleAddManualLead() {
-    const name = document.getElementById("manual-name").value.trim();
-    const urlVal = document.getElementById("manual-url").value.trim();
+function handleAddManualLead(e) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    const nameEl = document.getElementById("manual-name");
+    const urlEl = document.getElementById("manual-url");
+    const name = nameEl ? nameEl.value.trim() : "";
+    const urlVal = urlEl ? urlEl.value.trim() : "";
     
     if (!name || !urlVal) {
         alert("Nome e URL são campos obrigatórios.");
-        return;
+        return false;
     }
 
     // Add protocol if missing
@@ -736,15 +741,15 @@ function handleAddManualLead() {
     const location = document.getElementById("manual-location") ? document.getElementById("manual-location").value.trim() : "";
     const niche = document.getElementById("manual-niche").value;
     const platform = document.getElementById("manual-platform").value;
-    const ticket = parseFloat(document.getElementById("manual-ticket").value) || 200;
-    const visits = parseInt(document.getElementById("manual-visits").value) || 5000;
+    const ticket = parseFloat(document.getElementById("manual-ticket").value) || 0;
+    const visits = parseInt(document.getElementById("manual-visits").value) || 0;
     const status = document.getElementById("manual-status").value;
     const whatsapp = document.getElementById("manual-whatsapp").value.replace(/\D/g, '');
     const instagram = document.getElementById("manual-instagram").value.trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/$/, '');
     const email = document.getElementById("manual-email").value.trim();
 
     const newLead = {
-        id: "lead_" + Date.now(),
+        id: "usr_lead_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
         name,
         url,
         location,
@@ -767,6 +772,7 @@ function handleAddManualLead() {
     renderTables();
     renderCharts();
     closeManualLeadModal();
+    return false;
 }
 
 // Helper formatting phones
