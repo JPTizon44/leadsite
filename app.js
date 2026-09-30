@@ -26,6 +26,9 @@ function loadLeads() {
             leads = JSON.parse(localData);
             if (!leads || !Array.isArray(leads)) {
                 leads = [...INITIAL_LEADS];
+            } else {
+                // Remove dados de demonstração legados caso ainda estejam salvos no navegador
+                leads = leads.filter(l => !l.id || !l.id.startsWith("lead_"));
             }
         } catch (e) {
             console.error("Erro ao ler dados do LocalStorage, restaurando padrão.", e);
