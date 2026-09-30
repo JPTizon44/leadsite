@@ -64,7 +64,11 @@ function loadLeads() {
 }
 
 function saveToLocalStorage() {
-    localStorage.setItem("leadfinder_leads", JSON.stringify(leads));
+    try {
+        localStorage.setItem("leadfinder_leads", JSON.stringify(leads));
+    } catch (err) {
+        console.error("Erro ao salvar no LocalStorage:", err);
+    }
     const countBadge = document.getElementById("leads-count-badge");
     if (countBadge) {
         countBadge.innerText = leads.length;
@@ -739,14 +743,19 @@ function handleAddManualLead(e) {
     }
 
     const location = document.getElementById("manual-location") ? document.getElementById("manual-location").value.trim() : "";
-    const niche = document.getElementById("manual-niche").value;
-    const platform = document.getElementById("manual-platform").value;
-    const ticket = parseFloat(document.getElementById("manual-ticket").value) || 0;
-    const visits = parseInt(document.getElementById("manual-visits").value) || 0;
-    const status = document.getElementById("manual-status").value;
-    const whatsapp = document.getElementById("manual-whatsapp").value.replace(/\D/g, '');
-    const instagram = document.getElementById("manual-instagram").value.trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/$/, '');
-    const email = document.getElementById("manual-email").value.trim();
+    const niche = document.getElementById("manual-niche") ? document.getElementById("manual-niche").value : "Outros";
+    const platform = document.getElementById("manual-platform") ? document.getElementById("manual-platform").value : "Outra / Desconhecida";
+    
+    const inputTicket = document.getElementById("manual-ticket") ? parseFloat(document.getElementById("manual-ticket").value) : NaN;
+    const ticket = !isNaN(inputTicket) && inputTicket > 0 ? inputTicket : 250;
+
+    const inputVisits = document.getElementById("manual-visits") ? parseInt(document.getElementById("manual-visits").value) : NaN;
+    const visits = !isNaN(inputVisits) && inputVisits > 0 ? inputVisits : 5000;
+
+    const status = document.getElementById("manual-status") ? document.getElementById("manual-status").value : "Novo";
+    const whatsapp = document.getElementById("manual-whatsapp") ? document.getElementById("manual-whatsapp").value.replace(/\D/g, '') : "";
+    const instagram = document.getElementById("manual-instagram") ? document.getElementById("manual-instagram").value.trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/$/, '') : "";
+    const email = document.getElementById("manual-email") ? document.getElementById("manual-email").value.trim() : "";
 
     const newLead = {
         id: "usr_lead_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
@@ -768,10 +777,36 @@ function handleAddManualLead(e) {
 
     leads.push(newLead);
     saveToLocalStorage();
+
+    // Reset filters so the new lead is immediately visible in the table
+    const searchInput = document.getElementById("search-lead-input");
+    if (searchInput) searchInput.value = "";
+    
+    const cityInput = document.getElementById("filter-cidade");
+    if (cityInput) cityInput.value = "";
+    
+    const nicheFilter = document.getElementById("filter-nicho");
+    if (nicheFilter) nicheFilter.value = "todos";
+    
+    const platformFilter = document.getElementById("filter-plataforma");
+    if (platformFilter) platformFilter.value = "todas";
+
+    const statusFilter = document.getElementById("filter-status");
+    if (statusFilter) statusFilter.value = "todos";
+
+    const trafegoFilter = document.getElementById("filter-trafego");
+    if (trafegoFilter) trafegoFilter.value = "todos";
+
     updateDashboardStats();
     renderTables();
     renderCharts();
     closeManualLeadModal();
+
+    // Switch to Leads DB tab to show the new lead
+    const dbBtn = document.querySelector('[data-tab="leads-db"]');
+    if (dbBtn) dbBtn.click();
+
+    alert(`✅ Lead "${name}" cadastrado e salvo com sucesso na sua carteira!`);
     return false;
 }
 
