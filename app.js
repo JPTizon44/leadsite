@@ -54,6 +54,7 @@ function loadLeads() {
         email: l.email || "",
         starred: !!l.starred,
         status: l.status || "Novo",
+        location: l.location || l.cidade || "",
         notes: l.notes || "",
         createdAt: l.createdAt || new Date().toISOString()
     }));
@@ -197,21 +198,25 @@ document.addEventListener("DOMContentLoaded", () => {
     safeAddListener("btn-search-google", "click", () => generateSearchQuery("google"));
     safeAddListener("btn-search-ddg", "click", () => generateSearchQuery("duckduckgo"));
 
-    // Evento de alteração de nicho no Buscador para preencher termos e controlar campo customizado
+    // Evento de alteração de nicho e localização no Buscador para preencher termos
     const finderNicheSelect = document.getElementById("finder-niche");
     const finderSearchKeywords = document.getElementById("finder-search-keywords");
+    const finderLocationInput = document.getElementById("finder-location");
     const customNicheGroup = document.getElementById("custom-niche-name-group");
     
     if (finderNicheSelect && finderSearchKeywords) {
         const updateKeywords = () => {
             const val = finderNicheSelect.value;
             const noWebsite = document.getElementById("search-no-website")?.checked;
+            const locationVal = finderLocationInput ? finderLocationInput.value.trim() : "";
             
-            if (noWebsite) {
-                finderSearchKeywords.value = NO_WEBSITE_NICHE_KEYWORDS[val] || "";
-            } else {
-                finderSearchKeywords.value = DEFAULT_NICHE_KEYWORDS[val] || "";
+            let baseKeywords = noWebsite ? (NO_WEBSITE_NICHE_KEYWORDS[val] || "") : (DEFAULT_NICHE_KEYWORDS[val] || "");
+            
+            if (locationVal) {
+                baseKeywords = `"${locationVal}" ${baseKeywords}`;
             }
+
+            finderSearchKeywords.value = baseKeywords;
             
             if (val === "Outros / Personalizado") {
                 if (customNicheGroup) customNicheGroup.style.display = "block";
@@ -219,7 +224,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (customNicheGroup) customNicheGroup.style.display = "none";
             }
         };
+
         finderNicheSelect.addEventListener("change", updateKeywords);
+        if (finderLocationInput) {
+            finderLocationInput.addEventListener("input", updateKeywords);
+        }
         
         const noWebsiteCheckbox = document.getElementById("search-no-website");
         if (noWebsiteCheckbox) {
@@ -473,16 +482,18 @@ function filterAndRenderLeadsTable() {
     const platformFilter = platformFilterEl ? platformFilterEl.value : "todas";
     
     const statusFilterEl = document.getElementById("filter-status");
-    const statusFilter = statusFilterEl ? statusFilterEl.value : "todos";
-
-    const trafegoFilterEl = document.getElementById("filter-trafego");
+    const statusFilter = sta    const trafegoFilterEl = document.getElementById("filter-trafego");
     const trafegoFilter = trafegoFilterEl ? trafegoFilterEl.value : "todos";
+
+    const cityInputEl = document.getElementById("filter-cidade");
+    const cityQuery = cityInputEl ? cityInputEl.value.toLowerCase().trim() : "";
 
     const filtered = leads.filter(lead => {
         // Text search
         const matchesQuery = lead.name.toLowerCase().includes(query) || 
                              lead.url.toLowerCase().includes(query) || 
                              (lead.email && lead.email.toLowerCase().includes(query)) ||
+                             (lead.location && lead.location.toLowerCase().includes(query)) ||
                              (lead.notes && lead.notes.toLowerCase().includes(query));
         
         // Niche filter
@@ -497,7 +508,10 @@ function filterAndRenderLeadsTable() {
         // Traffic filter
         const matchesTrafego = trafegoFilter === "todos" || lead.visits >= parseInt(trafegoFilter);
 
-        return matchesQuery && matchesNiche && matchesPlatform && matchesStatus && matchesTrafego;
+        // City filter
+        const matchesCity = !cityQuery || (lead.location && lead.location.toLowerCase().includes(cityQuery));
+
+        return matchesQuery && matchesNiche && matchesPlatform && matchesStatus && matchesTrafego && matchesCity;
     });
 
     // Sort by star status then name
@@ -522,6 +536,7 @@ function filterAndRenderLeadsTable() {
                 <div class="lead-name-col">
                     <span class="lead-name">${lead.name}</span>
                     <a href="${lead.url}" target="_blank" onclick="event.stopPropagation();" class="lead-url">${lead.url.replace(/^https?:\/\/(www\.)?/, '')}</a>
+                    ${lead.location ? `<span style="font-size:11px; color:#60a5fa; margin-top:2px;"><i data-lucide="map-pin" style="width:11px;height:11px;display:inline-block;vertical-align:middle;"></i> ${lead.location}</span>` : ''}
                 </div>
             </td>
             <td><span class="badge badge-outline">${lead.niche}</span></td>
@@ -587,6 +602,9 @@ function openDetailsModal(id) {
     urlLink.href = lead.url;
     urlLink.innerHTML = `${lead.url.replace(/^https?:\/\/(www\.)?/, '')} <i data-lucide="external-link" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i>`;
     
+    const locEl = document.getElementById("modal-lead-location");
+    if (locEl) locEl.innerText = lead.location || "Não informada";
+
     document.getElementById("modal-lead-ticket-detailed").innerText = lead.ticket > 0 ? `R$ ${lead.ticket.toFixed(2)} (estimado por amostragem de produtos)` : 'N/A (Lead sem site próprio)';
     document.getElementById("modal-lead-visits-detailed").innerText = lead.visits > 0 ? `${formatVisits(lead.visits || 0)} acessos/mês (estimado)` : 'N/A (Lead sem site próprio)';
 
@@ -716,6 +734,7 @@ function handleAddManualLead() {
         url = "https://" + url;
     }
 
+    const location = document.getElementById("manual-location") ? document.getElementById("manual-location").value.trim() : "";
     const niche = document.getElementById("manual-niche").value;
     const platform = document.getElementById("manual-platform").value;
     const ticket = parseFloat(document.getElementById("manual-ticket").value) || 200;
@@ -729,6 +748,7 @@ function handleAddManualLead() {
         id: "lead_" + Date.now(),
         name,
         url,
+        location,
         niche,
         platform,
         ticket,
@@ -1027,6 +1047,10 @@ async function processNextScanQueue() {
     
     try {
         const leadData = await analyzeStoreUrl(currentUrl);
+        const finderLocation = document.getElementById("finder-location") ? document.getElementById("finder-location").value.trim() : "";
+        if (finderLocation && (!leadData.location || leadData.location === "Não informada")) {
+            leadData.location = finderLocation;
+        }
         scannedCount++;
         
         // Filter by target ticket (R$ 100 to R$ 800)

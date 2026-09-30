@@ -208,6 +208,10 @@
                                 <i data-lucide="search"></i>
                                 <input type="text" id="search-lead-input" placeholder="Buscar por nome, URL ou palavra-chave...">
                             </div>
+                            <div class="search-input-wrapper" style="max-width: 200px;">
+                                <i data-lucide="map-pin"></i>
+                                <input type="text" id="filter-cidade" placeholder="Filtrar por cidade...">
+                            </div>
                             <div class="select-wrapper">
                                 <select id="filter-nicho">
                                     <option value="todos">Todos os Nichos</option>
@@ -336,6 +340,12 @@
                             <div class="form-group" id="custom-niche-name-group" style="display: none;">
                                 <label for="finder-custom-niche-name">Nome do Nicho Personalizado <span class="required">*</span></label>
                                 <input type="text" id="finder-custom-niche-name" class="form-control" placeholder="Ex: Suplementos & Vitaminas">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="finder-location"><i data-lucide="map-pin" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"></i> Cidade / Estado (Localização)</label>
+                                <input type="text" id="finder-location" class="form-control" placeholder="Ex: Ponta Grossa - PR, Curitiba, São Paulo">
+                                <p class="input-tip">Digite a cidade para direcionar as buscas e capturas para essa região (ou deixe em branco para busca nacional).</p>
                             </div>
 
                             <div class="form-group">
@@ -528,6 +538,10 @@
                         <a href="#" target="_blank" id="modal-lead-url" class="info-value link-style">https://www.loja.com.br <i data-lucide="external-link" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i></a>
                     </div>
                     <div class="modal-info-row">
+                        <span class="info-label">Localização:</span>
+                        <span class="info-value" id="modal-lead-location">Não informada</span>
+                    </div>
+                    <div class="modal-info-row">
                         <span class="info-label">Ticket Calculado:</span>
                         <span class="info-value" id="modal-lead-ticket-detailed">R$ 0,00 (estimado a partir dos preços na home)</span>
                     </div>
@@ -623,6 +637,10 @@
                 <div class="form-group">
                     <label for="manual-url">URL do Website <span class="required">*</span></label>
                     <input type="url" id="manual-url" class="form-control" required placeholder="https://www.bebeluxo.com.br">
+                </div>
+                <div class="form-group">
+                    <label for="manual-location">Cidade / Estado (Localização)</label>
+                    <input type="text" id="manual-location" class="form-control" placeholder="Ex: Ponta Grossa - PR">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
