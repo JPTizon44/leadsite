@@ -359,6 +359,51 @@ function formatVisits(num) {
 function renderTables() {
     renderRecentLeadsTable();
     filterAndRenderLeadsTable();
+    renderContactCloud();
+}
+
+function renderContactCloud() {
+    const cloudBox = document.getElementById("contact-cloud-box");
+    const countBadge = document.getElementById("cloud-contacted-count");
+    if (!cloudBox) return;
+
+    cloudBox.innerHTML = "";
+
+    // Filtra todos os contatos com abordagens em andamento ou concluídas (diferentes de 'Novo')
+    const contactedLeads = leads.filter(l => l.status && l.status !== "Novo");
+    
+    if (countBadge) {
+        countBadge.innerText = `${contactedLeads.length} Marcado${contactedLeads.length !== 1 ? 's' : ''}`;
+    }
+
+    if (contactedLeads.length === 0) {
+        cloudBox.innerHTML = `
+            <div class="cloud-empty-state">
+                <div class="cloud-empty-icon">
+                    <i data-lucide="cloud"></i>
+                </div>
+                <h4>Sua nuvem de contatos está vazia</h4>
+                <p>À medida que você abordar empreendedores e alterar o status para <strong>"Em Contato"</strong>, <strong>"Qualificado"</strong> ou <strong>"Parceria Fechada"</strong>, eles aparecerão destacados nesta nuvem visual!</p>
+            </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
+        return;
+    }
+
+    contactedLeads.forEach(lead => {
+        const statusSlug = lead.status.toLowerCase().replace(/[^a-z0-9]/g, '-');
+        const bubble = document.createElement("div");
+        bubble.className = `cloud-bubble status-${statusSlug}`;
+        bubble.title = `Clique para ver/editar o histórico de ${lead.name}`;
+        bubble.innerHTML = `
+            <span class="cloud-bubble-dot"></span>
+            <span class="cloud-bubble-name">${lead.name}</span>
+            <span class="cloud-bubble-niche">${lead.niche}</span>
+            <span class="cloud-bubble-status">${lead.status}</span>
+        `;
+        bubble.addEventListener("click", () => openDetailsModal(lead.id));
+        cloudBox.appendChild(bubble);
+    });
 }
 
 function renderRecentLeadsTable() {
