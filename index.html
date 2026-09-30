@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadFinder E-commerce Brasil - Buscador Inteligente</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Styleheet -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <i data-lucide="compass" class="glow-icon"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>Lead<span>Finder</span></h1>
+                    <span class="brand-subtitle">E-commerce Brasil</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-tab="dashboard">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Painel Geral</span>
+                </button>
+                <button class="nav-btn" data-tab="leads-db">
+                    <i data-lucide="database"></i>
+                    <span>Carteira de Leads</span>
+                    <span class="nav-badge" id="leads-count-badge">0</span>
+                </button>
+                <button class="nav-btn" data-tab="lead-finder">
+                    <i data-lucide="search-code"></i>
+                    <span>Buscador & Scanner</span>
+                </button>
+                <button class="nav-btn" data-tab="help-settings">
+                    <i data-lucide="help-circle"></i>
+                    <span>Ajuda & Configurações</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator online">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Modo Estático Ativo</span>
+                </div>
+                <p class="footer-version">v1.2.0 (GitHub Ready)</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-title">
+                    <h2 id="page-title">Painel Geral</h2>
+                    <p id="page-description">Visão geral do seu banco de leads de e-commerce.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" id="btn-import-leads">
+                        <i data-lucide="upload"></i>
+                        <span>Importar Backup</span>
+                    </button>
+                    <button class="btn btn-primary" id="btn-export-leads-header">
+                        <i data-lucide="download"></i>
+                        <span>Exportar CSV</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Tabs Container -->
+            <div class="tab-content-container">
+
+                <!-- TAB 1: DASHBOARD -->
+                <section id="tab-dashboard" class="tab-content active">
+                    <!-- Metrics Cards Grid -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">Total de Leads</span>
+                                <div class="metric-icon-wrapper purple"><i data-lucide="users"></i></div>
+                            </div>
+                            <div class="metric-value" id="stat-total-leads">0</div>
+                            <div class="metric-sub" id="stat-total-leads-sub">E-commerces cadastrados</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">Ticket Médio Geral</span>
+                                <div class="metric-icon-wrapper emerald"><i data-lucide="dollar-sign"></i></div>
+                            </div>
+                            <div class="metric-value" id="stat-avg-ticket">R$ 0,00</div>
+                            <div class="metric-sub">Faixa ideal: R$100 - R$800</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">Taxa de Contato</span>
+                                <div class="metric-icon-wrapper blue"><i data-lucide="message-square-text"></i></div>
+                            </div>
+                            <div class="metric-value" id="stat-contact-rate">0%</div>
+                            <div class="metric-sub" id="stat-contact-rate-sub">0 de 0 abordados</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">Favoritos / Quentes</span>
+                                <div class="metric-icon-wrapper gold"><i data-lucide="star" class="fill-star"></i></div>
+                            </div>
+                            <div class="metric-value" id="stat-starred-leads">0</div>
+                            <div class="metric-sub">Leads com alta prioridade</div>
+                        </div>
+                    </div>
+
+                    <!-- Charts and Analytics section -->
+                    <div class="analytics-grid">
+                        <!-- Chart 1: Niches -->
+                        <div class="chart-card">
+                            <h3>Distribuição por Nicho</h3>
+                            <div class="chart-container" id="niche-chart-bars">
+                                <!-- Dynamic CSS Bars will go here -->
+                            </div>
+                        </div>
+                        <!-- Chart 2: Platforms -->
+                        <div class="chart-card">
+                            <h3>Plataformas de E-commerce</h3>
+                            <div class="chart-container" id="platform-chart-bars">
+                                <!-- Dynamic CSS Bars will go here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Leads Table -->
+                    <div class="recent-leads-section">
+                        <div class="section-header">
+                            <h3>Leads Adicionados Recentemente</h3>
+                            <button class="text-link-btn" id="btn-view-all-leads">Ver todos os leads <i data-lucide="arrow-right"></i></button>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="leads-table" id="recent-leads-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;">Fav</th>
+                                        <th>E-commerce</th>
+                                        <th>Nicho</th>
+                                        <th>Plataforma</th>
+                                        <th>Ticket Est.</th>
+                                        <th>Acessos Est.</th>
+                                        <th>Contatos</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 2: CARTEIRA DE LEADS -->
+                <section id="tab-leads-db" class="tab-content">
+                    <div class="db-actions-row">
+                        <!-- Filters panel -->
+                        <div class="filters-panel">
+                            <div class="search-input-wrapper">
+                                <i data-lucide="search"></i>
+                                <input type="text" id="search-lead-input" placeholder="Buscar por nome, URL ou palavra-chave...">
+                            </div>
+                            <div class="select-wrapper">
+                                <select id="filter-nicho">
+                                    <option value="todos">Todos os Nichos</option>
+                                    <option value="Bebê / Infantil">Bebê / Infantil</option>
+                                    <option value="Tapetes & Decoração">Tapetes & Decoração</option>
+                                    <option value="Utensílios & Personalizados">Utensílios & Personalizados</option>
+                                    <option value="Moda & Acessórios">Moda & Acessórios</option>
+                                    <option value="Papelaria & Presentes">Papelaria & Presentes</option>
+                                    <option value="Beleza & Cosméticos">Beleza & Cosméticos</option>
+                                    <option value="Casa, Móveis & Jardim">Casa, Móveis & Jardim</option>
+                                    <option value="Pet Shop">Pet Shop</option>
+                                    <option value="Esportes & Outdoors">Esportes & Outdoors</option>
+                                    <option value="Eletrônicos & Acessórios">Eletrônicos & Acessórios</option>
+                                    <option value="Alimentos & Bebidas">Alimentos & Bebidas</option>
+                                    <option value="Joias & Semijoias">Joias & Semijoias</option>
+                                    <option value="Calçados & Bolsas">Calçados & Bolsas</option>
+                                    <option value="Serviços Locais / Clínicas">Serviços Locais / Clínicas</option>
+                                    <option value="Restaurantes & Gastronomia">Restaurantes & Gastronomia</option>
+                                    <option value="Lojas Físicas / Comércio Local">Lojas Físicas / Comércio Local</option>
+                                    <option value="Outros">Outros / Personalizado</option>
+                                </select>
+                            </div>
+                            <div class="select-wrapper">
+                                <select id="filter-plataforma">
+                                    <option value="todas">Todas as Plataformas</option>
+                                    <option value="Shopify">Shopify</option>
+                                    <option value="Nuvemshop">Nuvemshop</option>
+                                    <option value="Loja Integrada">Loja Integrada</option>
+                                    <option value="WooCommerce">WooCommerce</option>
+                                    <option value="Tray">Tray</option>
+                                    <option value="Sem site (Redes Sociais)">Sem site (Redes Sociais)</option>
+                                    <option value="Sem site (Apenas WhatsApp)">Sem site (Apenas WhatsApp)</option>
+                                    <option value="Institucional / Físico">Institucional / Físico</option>
+                                    <option value="Outra / Desconhecida">Outra / Desconhecida</option>
+                                </select>
+                            </div>
+                            <div class="select-wrapper">
+                                <select id="filter-status">
+                                    <option value="todos">Todos os Status</option>
+                                    <option value="Novo">Novo</option>
+                                    <option value="Em Contato">Em Contato</option>
+                                    <option value="Qualificado">Qualificado</option>
+                                    <option value="Parceria Fechada">Parceria Fechada</option>
+                                    <option value="Sem Interesse">Sem Interesse</option>
+                                </select>
+                            </div>
+                            <div class="select-wrapper">
+                                <select id="filter-trafego">
+                                    <option value="todos">Qualquer Tráfego</option>
+                                    <option value="2000">> 2.000 acessos/mês</option>
+                                    <option value="5000">> 5.000 acessos/mês</option>
+                                    <option value="10000">> 10.000 acessos/mês</option>
+                                    <option value="25000">> 25.000 acessos/mês</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="buttons-panel">
+                            <button class="btn btn-secondary" id="btn-export-csv">
+                                <i data-lucide="download"></i> Exportar CSV
+                            </button>
+                            <button class="btn btn-primary" id="btn-add-manual-lead">
+                                <i data-lucide="plus"></i> Novo Lead
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Leads Database Table -->
+                    <div class="table-wrapper main-db-table-wrapper">
+                        <table class="leads-table" id="main-leads-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">Fav</th>
+                                    <th>E-commerce</th>
+                                    <th>Nicho</th>
+                                    <th>Plataforma</th>
+                                    <th>Ticket Est.</th>
+                                    <th>Acessos Est.</th>
+                                    <th>Contatos</th>
+                                    <th>Status</th>
+                                    <th style="width: 100px; text-align: center;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-footer-info">
+                        <span id="showing-leads-count">Mostrando 0 de 0 leads</span>
+                    </div>
+                </section>
+
+                <!-- TAB 3: BUSCADOR & SCANNER -->
+                <section id="tab-lead-finder" class="tab-content">
+                    <div class="finder-layout">
+                        <!-- Left Panel: Parameters -->
+                        <div class="finder-control-panel">
+                            <div class="card-title-header">
+                                <i data-lucide="sliders-horizontal"></i>
+                                <h3>Parâmetros de Captação</h3>
+                            </div>
+                            
+                             <div class="form-group">
+                                <label for="finder-niche">Nicho Alvo</label>
+                                <select id="finder-niche" class="form-control">
+                                    <option value="Bebê / Infantil">Bebê / Infantil (ex: roupas, brinquedos, enxovais)</option>
+                                    <option value="Tapetes & Decoração">Tapetes & Decoração (ex: tapetes, almofadas, quadros)</option>
+                                    <option value="Utensílios & Personalizados">Utensílios & Personalizados (ex: copos térmicos, brindes, garrafas)</option>
+                                    <option value="Moda & Acessórios">Moda & Acessórios (ex: bolsas, roupas, óculos)</option>
+                                    <option value="Papelaria & Presentes">Papelaria & Presentes (ex: planners, canecas, mimos de luxo)</option>
+                                    <option value="Beleza & Cosméticos">Beleza & Cosméticos (ex: maquiagem, skincare, cosméticos)</option>
+                                    <option value="Casa, Móveis & Jardim">Casa, Móveis & Jardim (ex: luminárias, móveis rústicos, decoração)</option>
+                                    <option value="Pet Shop">Pet Shop (ex: ração premium, coleiras, brinquedos pet)</option>
+                                    <option value="Esportes & Outdoors">Esportes & Outdoors (ex: roupas fitness, garrafas térmicas, suplementos)</option>
+                                    <option value="Eletrônicos & Acessórios">Eletrônicos & Acessórios (ex: fones bluetooth, carregadores, cases)</option>
+                                    <option value="Alimentos & Bebidas">Alimentos & Bebidas (ex: cafés especiais, chocolates, cervejas artesanais)</option>
+                                    <option value="Joias & Semijoias">Joias & Semijoias (ex: anéis de prata, semijoias banhadas)</option>
+                                    <option value="Calçados & Bolsas">Calçados & Bolsas (ex: sapatos artesanais, bolsas de couro)</option>
+                                    <option value="Serviços Locais / Clínicas">Serviços Locais / Clínicas (ex: dentista, estética, fisioterapia)</option>
+                                    <option value="Restaurantes & Gastronomia">Restaurantes & Gastronomia (ex: hamburgueria, padaria, restaurante)</option>
+                                    <option value="Lojas Físicas / Comércio Local">Lojas Físicas / Comércio Local (ex: oficina, ótica, pet shop de bairro)</option>
+                                    <option value="Outros / Personalizado">Outros / Personalizado (Defina seu nicho e palavras-chave)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" id="custom-niche-name-group" style="display: none;">
+                                <label for="finder-custom-niche-name">Nome do Nicho Personalizado <span class="required">*</span></label>
+                                <input type="text" id="finder-custom-niche-name" class="form-control" placeholder="Ex: Suplementos & Vitaminas">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="finder-search-keywords">Palavras-chave de Pesquisa (Editável)</label>
+                                <textarea id="finder-search-keywords" class="form-control" style="height: 100px; font-family: monospace; font-size: 12px; line-height: 1.4;" placeholder='Ex: "roupas de bebe" "carrinho"'></textarea>
+                                <p class="input-tip">Estes termos serão usados para gerar a pesquisa no Google/DuckDuckGo. Modifique livremente!</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Faixa de Ticket Médio Alvo</label>
+                                <div class="ticket-range-display">
+                                    <span>Mín: <strong id="range-min-val">R$ 100</strong></span>
+                                    <span>Máx: <strong id="range-max-val">R$ 800</strong></span>
+                                </div>
+                                <div class="range-sliders">
+                                    <input type="range" id="ticket-min-range" min="50" max="300" step="10" value="100">
+                                    <input type="range" id="ticket-max-range" min="300" max="1500" step="50" value="800">
+                                </div>
+                                <p class="input-tip">Os leads serão filtrados e validados pelo robô dentro dessa faixa.</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="finder-min-visits">Acessos Mensais Mínimos</label>
+                                <select id="finder-min-visits" class="form-control">
+                                    <option value="0">Qualquer tráfego</option>
+                                    <option value="2000" selected>Pelo menos 2.000 acessos/mês</option>
+                                    <option value="5000">Pelo menos 5.000 acessos/mês</option>
+                                    <option value="10000">Pelo menos 10.000 acessos/mês</option>
+                                    <option value="25000">Pelo menos 25.000 acessos/mês</option>
+                                </select>
+                                <p class="input-tip">O robô descartará lojas que não atingirem a estimativa de tráfego.</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cors-proxy-select">Servidor Proxy para Scraping</label>
+                                <select id="cors-proxy-select" class="form-control">
+                                    <option value="allorigins">AllOrigins (Muito rápido e estável)</option>
+                                    <option value="corsproxy">CORSProxy.io (Excelente para e-commerce)</option>
+                                    <option value="direct">Conexão Direta (Use apenas se estiver rodando backend local)</option>
+                                </select>
+                                <p class="input-tip">Proxies burlam o CORS do navegador para obter o conteúdo das páginas.</p>
+                            </div>
+
+                            <!-- Diagnostic Search Button -->
+                            <div class="search-helper-box">
+                                <h4>Como encontrar links para escanear?</h4>
+                                <p>Use nosso gerador de pesquisas cirúrgicas. Ele cria termos de busca ideais para expor e-commerces brasileiros no nicho escolhido.</p>
+                                
+                                <div class="search-option-checkbox" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                    <input type="checkbox" id="search-no-website" style="width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer;">
+                                    <label for="search-no-website" style="font-size: 12px; color: var(--text-secondary); cursor: pointer; user-select: none;">
+                                        Buscar apenas leads <strong>sem site pronto</strong> (Instagram / WhatsApp)
+                                    </label>
+                                </div>
+
+                                <div class="search-engines-buttons">
+                                    <button class="btn btn-secondary btn-sm" id="btn-search-google">
+                                        <i data-lucide="search"></i> Buscar no Google
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm" id="btn-search-ddg">
+                                        <i data-lucide="search"></i> Buscar no DuckDuckGo
+                                    </button>
+                                </div>
+                                <p class="input-tip mt-2">Clique em um dos botões, copie as URLs dos e-commerces ou perfis que surgirem e cole no analisador à direita.</p>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Scanner and Logs -->
+                        <div class="finder-scanner-panel">
+                            <div class="card-title-header">
+                                <i data-lucide="cpu"></i>
+                                <h3>Analisador de URLs e Extrator de Dados</h3>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="scan-urls-input">Cole as URLs dos E-commerces para Análise (Uma por linha)</label>
+                                <textarea id="scan-urls-input" class="form-control text-area-urls" placeholder="Exemplo:&#10;https://www.lojaexemplo1.com.br&#10;https://www.lojaexemplo2.com.br/copos-personalizados"></textarea>
+                                <p class="input-tip">Você pode colar múltiplas URLs. O analisador visitará cada loja, detectará a plataforma, estimará o ticket médio e coletará contatos em segundos.</p>
+                            </div>
+
+                            <div class="scan-actions-row">
+                                <button class="btn btn-primary btn-lg" id="btn-start-scan">
+                                    <i data-lucide="play-circle"></i> Iniciar Análise e Captar Leads
+                                </button>
+                                <button class="btn btn-secondary" id="btn-clear-scan" style="display: none;">
+                                    Limpar Logs
+                                </button>
+                            </div>
+
+                            <!-- Progress Container -->
+                            <div class="scan-progress-container" id="scan-progress-box" style="display: none;">
+                                <div class="progress-info-row">
+                                    <span id="scan-progress-status">Processando URLs: 0 de 0</span>
+                                    <span id="scan-progress-percentage">0%</span>
+                                </div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill" id="scan-progress-fill" style="width: 0%;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Logs output terminal -->
+                            <div class="logs-terminal-container">
+                                <div class="terminal-header">
+                                    <span class="terminal-title">Terminal de Varredura</span>
+                                    <span class="terminal-dot green"></span>
+                                </div>
+                                <div class="terminal-body" id="scan-logs-output">
+                                    <div class="log-line system">[Aguardando] Insira as URLs no campo acima e clique em "Iniciar Análise".</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 4: AJUDA & CONFIGURAÇÕES -->
+                <section id="tab-help-settings" class="tab-content">
+                    <div class="help-grid">
+                        <div class="help-card">
+                            <h3>Como Usar o LeadFinder Eficientemente</h3>
+                            <ol class="help-steps">
+                                <li>
+                                    <strong>Gere a pesquisa:</strong> Vá na aba <em>Buscador & Scanner</em>, selecione o nicho de interesse (ex: "Bebê / Infantil") e clique em <strong>"Buscar no Google"</strong>.
+                                </li>
+                                <li>
+                                    <strong>Copie as URLs:</strong> Nos resultados da pesquisa, clique com o botão direito nas lojas virtuais e copie seus links. Evite marketplaces grandes (como Mercado Livre, Shopee ou Amazon).
+                                </li>
+                                <li>
+                                    <strong>Cole e Escaneie:</strong> Cole a lista de links na caixa do <em>Analisador de URLs</em> e clique em <strong>"Iniciar Análise"</strong>.
+                                </li>
+                                <li>
+                                    <strong>Filtro Automático:</strong> O robô analisará se os preços de cada site se enquadram na faixa de ticket médio definida (R$ 100 a R$ 800) e coletará o WhatsApp, Instagram e e-mail. Se for aprovado, o lead é adicionado à sua carteira automaticamente!
+                                </li>
+                            </ol>
+                        </div>
+
+                        <div class="help-card">
+                            <h3>Gestão de Dados & Segurança</h3>
+                            <p>Toda a sua carteira de leads e anotações é armazenada localmente no seu navegador. Caso você limpe o cache ou queira levar a ferramenta para outro computador, utilize as ferramentas de backup abaixo:</p>
+                            
+                            <div class="backup-actions-grid">
+                                <button class="btn btn-secondary btn-full" id="btn-backup-json">
+                                    <i data-lucide="file-json"></i> Baixar Backup Completo (.JSON)
+                                </button>
+                                <button class="btn btn-secondary btn-full" id="btn-trigger-import-file">
+                                    <i data-lucide="upload-cloud"></i> Restaurar Backup (.JSON)
+                                </button>
+                                <input type="file" id="backup-file-input" accept=".json" style="display: none;">
+                                <button class="btn btn-secondary btn-full" id="btn-reset-db" style="border-color: rgba(239, 68, 68, 0.3); color: #ff686d; background: rgba(239, 68, 68, 0.05); margin-top: 8px;">
+                                    <i data-lucide="rotate-ccw"></i> Restaurar Leads Padrão
+                                </button>
+                            </div>
+
+                            <div class="warning-box">
+                                <i data-lucide="alert-triangle"></i>
+                                <div>
+                                    <h5>Importante: GitHub Pages</h5>
+                                    <p>Esta versão estática roda inteiramente no navegador para facilitar a hospedagem no GitHub Pages sem custos de servidores. Recomendamos fazer um backup mensal em JSON para garantir a integridade dos seus dados a longo prazo!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- DETAIL MODAL / SIDESHEET -->
+    <div class="modal-overlay" id="lead-details-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-lead-name">Nome da Loja</h3>
+                <button class="close-modal-btn" id="btn-close-modal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-lead-quick-info">
+                    <span class="badge" id="modal-lead-niche">Nicho</span>
+                    <span class="badge badge-outline" id="modal-lead-platform">Plataforma</span>
+                    <span class="badge badge-ticket" id="modal-lead-ticket">Ticket</span>
+                </div>
+
+                <div class="modal-section">
+                    <h4>Informações do E-commerce</h4>
+                    <div class="modal-info-row">
+                        <span class="info-label">Website:</span>
+                        <a href="#" target="_blank" id="modal-lead-url" class="info-value link-style">https://www.loja.com.br <i data-lucide="external-link" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i></a>
+                    </div>
+                    <div class="modal-info-row">
+                        <span class="info-label">Ticket Calculado:</span>
+                        <span class="info-value" id="modal-lead-ticket-detailed">R$ 0,00 (estimado a partir dos preços na home)</span>
+                    </div>
+                    <div class="modal-info-row">
+                        <span class="info-label">Tráfego Estimado:</span>
+                        <span class="info-value" id="modal-lead-visits-detailed">0 acessos/mês</span>
+                    </div>
+                </div>
+
+                <div class="modal-section">
+                    <h4>Canais de Contato Extraídos</h4>
+                    <div class="contacts-grid-vertical">
+                        <div class="contact-item">
+                            <div class="contact-item-left">
+                                <i data-lucide="message-circle" class="whatsapp-color"></i>
+                                <span>WhatsApp:</span>
+                            </div>
+                            <div class="contact-item-right">
+                                <a href="#" target="_blank" id="modal-link-whatsapp" class="btn btn-sm btn-whatsapp">
+                                    <span id="modal-text-whatsapp">Conversar</span> <i data-lucide="arrow-up-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-item-left">
+                                <i data-lucide="instagram" class="instagram-color"></i>
+                                <span>Instagram:</span>
+                            </div>
+                            <div class="contact-item-right">
+                                <a href="#" target="_blank" id="modal-link-instagram" class="btn btn-sm btn-instagram">
+                                    <span id="modal-text-instagram">@perfil</span> <i data-lucide="arrow-up-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-item-left">
+                                <i data-lucide="mail" class="mail-color"></i>
+                                <span>E-mail:</span>
+                            </div>
+                            <div class="contact-item-right">
+                                <span id="modal-text-email">contato@loja.com.br</span>
+                                <button class="btn-copy" id="btn-copy-email" title="Copiar e-mail">
+                                    <i data-lucide="copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-section">
+                    <h4>Status do Lead</h4>
+                    <div class="form-group mt-1">
+                        <select id="modal-lead-status-select" class="form-control">
+                            <option value="Novo">Novo</option>
+                            <option value="Em Contato">Em Contato (Abordado)</option>
+                            <option value="Qualificado">Qualificado (Demonstrou Interesse)</option>
+                            <option value="Parceria Fechada">Parceria Fechada (Cliente)</option>
+                            <option value="Sem Interesse">Sem Interesse / Arquivado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-section flex-grow">
+                    <h4>Anotações e Histórico</h4>
+                    <textarea id="modal-lead-notes" class="form-control text-area-notes" placeholder="Digite aqui o histórico de contato, detalhes das propostas enviadas, etc. Salva automaticamente..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-modal-delete-lead">
+                    <i data-lucide="trash-2"></i> Excluir Lead
+                </button>
+                <button class="btn btn-primary" id="btn-modal-save-lead">
+                    Salvar e Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MANUAL ADD LEAD MODAL -->
+    <div class="modal-overlay" id="manual-lead-modal">
+        <div class="modal-card mini-modal">
+            <div class="modal-header">
+                <h3>Adicionar Novo Lead Manualmente</h3>
+                <button class="close-modal-btn" id="btn-close-manual-modal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="manual-lead-form" class="modal-body">
+                <div class="form-group">
+                    <label for="manual-name">Nome da Loja <span class="required">*</span></label>
+                    <input type="text" id="manual-name" class="form-control" required placeholder="Ex: Bebê Luxo">
+                </div>
+                <div class="form-group">
+                    <label for="manual-url">URL do Website <span class="required">*</span></label>
+                    <input type="url" id="manual-url" class="form-control" required placeholder="https://www.bebeluxo.com.br">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="manual-niche">Nicho</label>
+                        <select id="manual-niche" class="form-control">
+                            <option value="Bebê / Infantil">Bebê / Infantil</option>
+                            <option value="Tapetes & Decoração">Tapetes & Decoração</option>
+                            <option value="Utensílios & Personalizados">Utensílios & Personalizados</option>
+                            <option value="Moda & Acessórios">Moda & Acessórios</option>
+                            <option value="Papelaria & Presentes">Papelaria & Presentes</option>
+                            <option value="Beleza & Cosméticos">Beleza & Cosméticos</option>
+                            <option value="Casa, Móveis & Jardim">Casa, Móveis & Jardim</option>
+                            <option value="Pet Shop">Pet Shop</option>
+                            <option value="Esportes & Outdoors">Esportes & Outdoors</option>
+                            <option value="Eletrônicos & Acessórios">Eletrônicos & Acessórios</option>
+                            <option value="Alimentos & Bebidas">Alimentos & Bebidas</option>
+                            <option value="Joias & Semijoias">Joias & Semijoias</option>
+                            <option value="Calçados & Bolsas">Calçados & Bolsas</option>
+                            <option value="Serviços Locais / Clínicas">Serviços Locais / Clínicas</option>
+                            <option value="Restaurantes & Gastronomia">Restaurantes & Gastronomia</option>
+                            <option value="Lojas Físicas / Comércio Local">Lojas Físicas / Comércio Local</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="manual-platform">Plataforma</label>
+                        <select id="manual-platform" class="form-control">
+                            <option value="Shopify">Shopify</option>
+                            <option value="Nuvemshop">Nuvemshop</option>
+                            <option value="Loja Integrada">Loja Integrada</option>
+                            <option value="WooCommerce">WooCommerce</option>
+                            <option value="Tray">Tray</option>
+                            <option value="Sem site (Redes Sociais)">Sem site (Redes Sociais)</option>
+                            <option value="Sem site (Apenas WhatsApp)">Sem site (Apenas WhatsApp)</option>
+                            <option value="Institucional / Físico">Institucional / Físico</option>
+                            <option value="Outra / Desconhecida">Outra / Desconhecida</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="manual-ticket">Ticket Médio Estimado (R$)</label>
+                        <input type="number" id="manual-ticket" class="form-control" placeholder="350">
+                    </div>
+                    <div class="form-group">
+                        <label for="manual-visits">Acessos Est. Mensais</label>
+                        <input type="number" id="manual-visits" class="form-control" placeholder="5000" value="5000">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="manual-status">Status Inicial</label>
+                        <select id="manual-status" class="form-control">
+                            <option value="Novo">Novo</option>
+                            <option value="Em Contato">Em Contato</option>
+                            <option value="Qualificado">Qualificado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <!-- Spacer alignment -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="manual-whatsapp">WhatsApp (com DDD)</label>
+                    <input type="text" id="manual-whatsapp" class="form-control" placeholder="11999998888">
+                </div>
+                <div class="form-group">
+                    <label for="manual-instagram">Instagram (somente usuário ou URL)</label>
+                    <input type="text" id="manual-instagram" class="form-control" placeholder="bebeluxo_oficial">
+                </div>
+                <div class="form-group">
+                    <label for="manual-email">E-mail de Contato</label>
+                    <input type="email" id="manual-email" class="form-control" placeholder="contato@bebeluxo.com.br">
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-cancel-manual">Cancelar</button>
+                <button class="btn btn-primary" id="btn-submit-manual">Adicionar Lead</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Application -->
+    <script src="app.js"></script>
+</body>
+</html>
