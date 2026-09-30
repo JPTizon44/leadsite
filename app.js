@@ -482,7 +482,9 @@ function filterAndRenderLeadsTable() {
     const platformFilter = platformFilterEl ? platformFilterEl.value : "todas";
     
     const statusFilterEl = document.getElementById("filter-status");
-    const statusFilter = sta    const trafegoFilterEl = document.getElementById("filter-trafego");
+    const statusFilter = statusFilterEl ? statusFilterEl.value : "todos";
+
+    const trafegoFilterEl = document.getElementById("filter-trafego");
     const trafegoFilter = trafegoFilterEl ? trafegoFilterEl.value : "todos";
 
     const cityInputEl = document.getElementById("filter-cidade");
