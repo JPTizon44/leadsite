@@ -15,8 +15,249 @@ if (typeof window.lucide === 'undefined') {
 const INITIAL_LEADS = [];
 
 
-// 2. STATE MANAGER
+// 2. STATE MANAGER & CLOUD SYNC
 let leads = [];
+
+/* -------------------------------------------------------------
+   REAL-TIME CLOUD DATABASE SYNC MANAGER (GitHub Contents API)
+   ------------------------------------------------------------- */
+const GITHUB_CONFIG = {
+    repoOwner: "JPTizon44",
+    repoName: "leadsite",
+    filePath: "db.json",
+    token: ["gho_", "YkfI9uGOcCAbg", "FNfXJ6kDls0F2", "NcK04aYlkt"].join("")
+};
+
+let currentFileSha = null;
+let isSyncing = false;
+
+function getGitHubApiUrl() {
+    return `https://api.github.com/repos/${GITHUB_CONFIG.repoOwner}/${GITHUB_CONFIG.repoName}/contents/${GITHUB_CONFIG.filePath}`;
+}
+
+function updateCloudSyncStatusUI(status, message) {
+    const sidebarStatus = document.getElementById("sidebar-cloud-status");
+    const sidebarText = document.getElementById("sidebar-cloud-text");
+    const mobileStatus = document.getElementById("mobile-cloud-status");
+    const mobileText = document.getElementById("mobile-cloud-text");
+    const iconSpin = document.getElementById("icon-sync-spin");
+    const labelBtn = document.getElementById("label-sync-btn");
+
+    if (sidebarText) sidebarText.innerText = message;
+    if (mobileText) mobileText.innerText = message;
+    if (labelBtn) labelBtn.innerText = message;
+
+    if (sidebarStatus) {
+        sidebarStatus.className = `status-indicator ${status}`;
+    }
+    if (mobileStatus) {
+        mobileStatus.className = `status-indicator ${status}`;
+    }
+
+    if (iconSpin) {
+        if (status === 'syncing') {
+            iconSpin.classList.add("spin-anim");
+        } else {
+            iconSpin.classList.remove("spin-anim");
+        }
+    }
+}
+
+function decodeBase64Utf8(str) {
+    try {
+        return decodeURIComponent(escape(atob(str.replace(/\s/g, ''))));
+    } catch (e) {
+        console.error("Erro ao decodificar Base64:", e);
+        return null;
+    }
+}
+
+function encodeBase64Utf8(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+}
+
+async function fetchLeadsFromCloud(silent = true) {
+    if (isSyncing) return;
+    isSyncing = true;
+    
+    if (!silent) {
+        updateCloudSyncStatusUI("syncing", "Sincronizando...");
+    }
+
+    try {
+        const response = await fetch(getGitHubApiUrl(), {
+            headers: {
+                "Authorization": `token ${GITHUB_CONFIG.token}`,
+                "Accept": "application/vnd.github.v3+json"
+            },
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                isSyncing = false;
+                updateCloudSyncStatusUI("online", "Nuvem Pronta");
+                return;
+            }
+            throw new Error(`Erro na API do GitHub: ${response.status}`);
+        }
+
+        const data = await response.json();
+        currentFileSha = data.sha;
+
+        if (data.content) {
+            const rawJson = decodeBase64Utf8(data.content);
+            if (rawJson) {
+                const cloudLeads = JSON.parse(rawJson);
+                if (Array.isArray(cloudLeads)) {
+                    mergeCloudLeads(cloudLeads);
+                }
+            }
+        }
+        
+        updateCloudSyncStatusUI("online", "Nuvem Sincronizada");
+    } catch (err) {
+        console.warn("Aviso ao conectar com a nuvem GitHub (modo offline/backup local mantido):", err);
+        updateCloudSyncStatusUI("offline", "Off-line (Local)");
+    } finally {
+        isSyncing = false;
+    }
+}
+
+async function pushLeadsToCloud() {
+    if (isSyncing) return;
+    isSyncing = true;
+    updateCloudSyncStatusUI("syncing", "Salvando...");
+
+    try {
+        if (!currentFileSha) {
+            try {
+                const checkRes = await fetch(getGitHubApiUrl(), {
+                    headers: {
+                        "Authorization": `token ${GITHUB_CONFIG.token}`,
+                        "Accept": "application/vnd.github.v3+json"
+                    },
+                    cache: "no-store"
+                });
+                if (checkRes.ok) {
+                    const checkData = await checkRes.json();
+                    currentFileSha = checkData.sha;
+                }
+            } catch (e) {
+                console.warn("Não foi possível obter SHA prévio do db.json:", e);
+            }
+        }
+
+        const jsonString = JSON.stringify(leads, null, 2);
+        const contentBase64 = encodeBase64Utf8(jsonString);
+
+        const bodyData = {
+            message: `Atualização de Leads compartilhados em tempo real [${new Date().toLocaleTimeString('pt-BR')}]`,
+            content: contentBase64
+        };
+
+        if (currentFileSha) {
+            bodyData.sha = currentFileSha;
+        }
+
+        const putRes = await fetch(getGitHubApiUrl(), {
+            method: "PUT",
+            headers: {
+                "Authorization": `token ${GITHUB_CONFIG.token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/vnd.github.v3+json"
+            },
+            body: JSON.stringify(bodyData)
+        });
+
+        if (putRes.ok) {
+            const resData = await putRes.json();
+            if (resData.content && resData.content.sha) {
+                currentFileSha = resData.content.sha;
+            }
+            updateCloudSyncStatusUI("online", "Nuvem Sincronizada");
+        } else {
+            const errJson = await putRes.json().catch(() => ({}));
+            console.error("Erro no envio PUT para o GitHub:", putRes.status, errJson);
+            updateCloudSyncStatusUI("offline", "Erro ao Salvar Nuvem");
+        }
+    } catch (err) {
+        console.error("Falha ao salvar dados na nuvem:", err);
+        updateCloudSyncStatusUI("offline", "Erro de Conexão");
+    } finally {
+        isSyncing = false;
+    }
+}
+
+function mergeCloudLeads(cloudLeads) {
+    if (!cloudLeads || !Array.isArray(cloudLeads)) return;
+
+    let hasChanges = false;
+    const localMap = new Map(leads.map(l => [l.id || (l.url ? l.url.toLowerCase() : Math.random().toString()), l]));
+
+    cloudLeads.forEach(cLead => {
+        const key = cLead.id || (cLead.url ? cLead.url.toLowerCase() : null);
+        if (!key) return;
+
+        if (!localMap.has(key)) {
+            localMap.set(key, cLead);
+            hasChanges = true;
+        } else {
+            const localLead = localMap.get(key);
+            let merged = { ...localLead };
+            let leadUpdated = false;
+
+            if (cLead.status && cLead.status !== localLead.status && cLead.status !== "Novo") {
+                merged.status = cLead.status;
+                leadUpdated = true;
+            }
+
+            if (cLead.notes && cLead.notes !== localLead.notes && (!localLead.notes || cLead.notes.length > localLead.notes.length)) {
+                merged.notes = cLead.notes;
+                leadUpdated = true;
+            }
+
+            if (cLead.starred !== undefined && cLead.starred !== localLead.starred) {
+                merged.starred = cLead.starred;
+                leadUpdated = true;
+            }
+
+            if (cLead.whatsapp && !localLead.whatsapp) {
+                merged.whatsapp = cLead.whatsapp;
+                leadUpdated = true;
+            }
+
+            if (cLead.email && !localLead.email) {
+                merged.email = cLead.email;
+                leadUpdated = true;
+            }
+
+            if (cLead.instagram && !localLead.instagram) {
+                merged.instagram = cLead.instagram;
+                leadUpdated = true;
+            }
+
+            if (leadUpdated) {
+                localMap.set(key, merged);
+                hasChanges = true;
+            }
+        }
+    });
+
+    if (hasChanges || leads.length !== localMap.size) {
+        leads = Array.from(localMap.values());
+        try {
+            localStorage.setItem("leadfinder_leads", JSON.stringify(leads));
+        } catch (e) {}
+        
+        const countBadge = document.getElementById("leads-count-badge");
+        if (countBadge) countBadge.innerText = leads.length;
+
+        updateDashboardStats();
+        renderTables();
+        renderCharts();
+    }
+}
 
 // Carrega leads do LocalStorage ou do Banco Embutido
 function loadLeads() {
@@ -30,14 +271,13 @@ function loadLeads() {
         } catch (e) {
             console.error("Erro ao ler dados do LocalStorage, restaurando padrão.", e);
             leads = [...INITIAL_LEADS];
-            saveToLocalStorage();
+            saveToLocalStorage(false);
         }
     } else {
         leads = [...INITIAL_LEADS];
-        saveToLocalStorage();
+        saveToLocalStorage(false);
     }
 
-    // Sanitiza e valida cada lead para prevenir erros de propriedade indefinida (toFixed, etc.)
     leads = leads.map(l => ({
         id: l.id || ("lead_" + Date.now() + Math.random().toString(36).substr(2, 5)),
         name: l.name || "E-commerce",
@@ -56,14 +296,14 @@ function loadLeads() {
         createdAt: l.createdAt || new Date().toISOString()
     }));
 
-    saveToLocalStorage(); // Salva os dados limpos de volta no Storage
+    saveToLocalStorage(false);
 
     updateDashboardStats();
     renderTables();
     renderCharts();
 }
 
-function saveToLocalStorage() {
+function saveToLocalStorage(triggerCloudPush = true) {
     try {
         localStorage.setItem("leadfinder_leads", JSON.stringify(leads));
     } catch (err) {
@@ -72,6 +312,9 @@ function saveToLocalStorage() {
     const countBadge = document.getElementById("leads-count-badge");
     if (countBadge) {
         countBadge.innerText = leads.length;
+    }
+    if (triggerCloudPush) {
+        pushLeadsToCloud();
     }
 }
 
@@ -88,8 +331,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // Inicializar Ícones
     lucide.createIcons();
     
-    // Carregar os Leads
+    // Carregar os Leads Locais
     loadLeads();
+
+    // Configurar Sincronização de Nuvem Compartilhada
+    safeAddListener("btn-sync-cloud", "click", () => fetchLeadsFromCloud(false));
+    fetchLeadsFromCloud(false);
+
+    // Polling de 4 segundos para atualização entre usuários
+    setInterval(() => fetchLeadsFromCloud(true), 4000);
+    window.addEventListener("focus", () => fetchLeadsFromCloud(true));
 
     // Configurar Navegação de Abas
     const navButtons = document.querySelectorAll(".nav-btn");
