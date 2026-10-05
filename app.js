@@ -192,60 +192,11 @@ async function pushLeadsToCloud() {
 function mergeCloudLeads(cloudLeads) {
     if (!cloudLeads || !Array.isArray(cloudLeads)) return;
 
-    let hasChanges = false;
-    const localMap = new Map(leads.map(l => [l.id || (l.url ? l.url.toLowerCase() : Math.random().toString()), l]));
+    const cloudStr = JSON.stringify(cloudLeads);
+    const localStr = JSON.stringify(leads);
 
-    cloudLeads.forEach(cLead => {
-        const key = cLead.id || (cLead.url ? cLead.url.toLowerCase() : null);
-        if (!key) return;
-
-        if (!localMap.has(key)) {
-            localMap.set(key, cLead);
-            hasChanges = true;
-        } else {
-            const localLead = localMap.get(key);
-            let merged = { ...localLead };
-            let leadUpdated = false;
-
-            if (cLead.status && cLead.status !== localLead.status && cLead.status !== "Novo") {
-                merged.status = cLead.status;
-                leadUpdated = true;
-            }
-
-            if (cLead.notes && cLead.notes !== localLead.notes && (!localLead.notes || cLead.notes.length > localLead.notes.length)) {
-                merged.notes = cLead.notes;
-                leadUpdated = true;
-            }
-
-            if (cLead.starred !== undefined && cLead.starred !== localLead.starred) {
-                merged.starred = cLead.starred;
-                leadUpdated = true;
-            }
-
-            if (cLead.whatsapp && !localLead.whatsapp) {
-                merged.whatsapp = cLead.whatsapp;
-                leadUpdated = true;
-            }
-
-            if (cLead.email && !localLead.email) {
-                merged.email = cLead.email;
-                leadUpdated = true;
-            }
-
-            if (cLead.instagram && !localLead.instagram) {
-                merged.instagram = cLead.instagram;
-                leadUpdated = true;
-            }
-
-            if (leadUpdated) {
-                localMap.set(key, merged);
-                hasChanges = true;
-            }
-        }
-    });
-
-    if (hasChanges || leads.length !== localMap.size) {
-        leads = Array.from(localMap.values());
+    if (cloudStr !== localStr) {
+        leads = cloudLeads;
         try {
             localStorage.setItem("leadfinder_leads", JSON.stringify(leads));
         } catch (e) {}
