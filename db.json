@@ -168,5 +168,22 @@
     "status": "Em Contato",
     "notes": "Lead criado manualmente no dia 06/10/2026.",
     "createdAt": "2026-10-06T17:39:27.017Z"
+  },
+  {
+    "id": "usr_lead_1791308512519_pwvc",
+    "name": "sushi",
+    "url": "https://www.instagram.com/hossomakidelivery/",
+    "location": "itapoá",
+    "niche": "Alimentos & Bebidas",
+    "platform": "Sem site (Apenas WhatsApp)",
+    "ticket": 250,
+    "visits": 5000,
+    "whatsapp": "",
+    "instagram": "",
+    "email": "",
+    "starred": false,
+    "status": "Em Contato",
+    "notes": "Lead criado manualmente no dia 06/10/2026.",
+    "createdAt": "2026-10-06T17:41:52.519Z"
   }
 ]
