@@ -117,5 +117,22 @@
     "status": "Em Contato",
     "notes": "Lead criado manualmente no dia 06/10/2026.",
     "createdAt": "2026-10-06T17:08:40.764Z"
+  },
+  {
+    "id": "usr_lead_1791306602171_uchj",
+    "name": "moda",
+    "url": "https://www.instagram.com/amabibolsas/",
+    "location": "sao paulo",
+    "niche": "Moda & Acessórios",
+    "platform": "Shopify",
+    "ticket": 250,
+    "visits": 5000,
+    "whatsapp": "",
+    "instagram": "",
+    "email": "",
+    "starred": false,
+    "status": "Em Contato",
+    "notes": "Lead criado manualmente no dia 06/10/2026.",
+    "createdAt": "2026-10-06T17:10:02.171Z"
   }
 ]
