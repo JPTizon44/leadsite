@@ -100,5 +100,22 @@
     "status": "Em Contato",
     "notes": "Lead criado manualmente no dia 06/10/2026.",
     "createdAt": "2026-10-06T17:07:10.278Z"
+  },
+  {
+    "id": "usr_lead_1791306520764_zs4b",
+    "name": "moda",
+    "url": "https://www.instagram.com/kabanamodaspauliceia/",
+    "location": "sao paulo",
+    "niche": "Moda & Acessórios",
+    "platform": "Sem site (Redes Sociais)",
+    "ticket": 250,
+    "visits": 5000,
+    "whatsapp": "",
+    "instagram": "",
+    "email": "",
+    "starred": false,
+    "status": "Em Contato",
+    "notes": "Lead criado manualmente no dia 06/10/2026.",
+    "createdAt": "2026-10-06T17:08:40.764Z"
   }
 ]
