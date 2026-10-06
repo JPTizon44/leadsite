@@ -236,5 +236,22 @@
     "status": "Em Contato",
     "notes": "Lead criado manualmente no dia 06/10/2026.",
     "createdAt": "2026-10-06T17:47:48.875Z"
+  },
+  {
+    "id": "usr_lead_1791309144169_te04",
+    "name": "brechó",
+    "url": "https://www.instagram.com/omundareubrecho/",
+    "location": "curitiba",
+    "niche": "Moda & Acessórios",
+    "platform": "Sem site (Apenas WhatsApp)",
+    "ticket": 250,
+    "visits": 5000,
+    "whatsapp": "",
+    "instagram": "",
+    "email": "",
+    "starred": false,
+    "status": "Em Contato",
+    "notes": "Lead criado manualmente no dia 06/10/2026.",
+    "createdAt": "2026-10-06T17:52:24.169Z"
   }
 ]
