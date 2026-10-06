@@ -66,5 +66,22 @@
     "status": "Em Contato",
     "notes": "Lead criado manualmente no dia 06/10/2026.",
     "createdAt": "2026-10-06T16:58:54.155Z"
+  },
+  {
+    "id": "usr_lead_1791306188752_7yv4",
+    "name": "eletronico",
+    "url": "https://www.instagram.com/jcelltenone/reels/",
+    "location": "belem",
+    "niche": "Eletrônicos & Acessórios",
+    "platform": "Sem site (Apenas WhatsApp)",
+    "ticket": 250,
+    "visits": 5000,
+    "whatsapp": "",
+    "instagram": "",
+    "email": "",
+    "starred": false,
+    "status": "Em Contato",
+    "notes": "Lead criado manualmente no dia 06/10/2026.",
+    "createdAt": "2026-10-06T17:03:08.752Z"
   }
 ]
