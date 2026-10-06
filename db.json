@@ -185,5 +185,22 @@
     "status": "Em Contato",
     "notes": "Lead criado manualmente no dia 06/10/2026.",
     "createdAt": "2026-10-06T17:41:52.519Z"
+  },
+  {
+    "id": "usr_lead_1791308642933_hxdn",
+    "name": "roupa",
+    "url": "https://www.instagram.com/listou.byste/",
+    "location": "ceará",
+    "niche": "Moda & Acessórios",
+    "platform": "Sem site (Apenas WhatsApp)",
+    "ticket": 250,
+    "visits": 5000,
+    "whatsapp": "",
+    "instagram": "",
+    "email": "",
+    "starred": false,
+    "status": "Em Contato",
+    "notes": "Lead criado manualmente no dia 06/10/2026.",
+    "createdAt": "2026-10-06T17:44:02.933Z"
   }
 ]
