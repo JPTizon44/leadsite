@@ -83,5 +83,22 @@
     "status": "Em Contato",
     "notes": "Lead criado manualmente no dia 06/10/2026.",
     "createdAt": "2026-10-06T17:03:08.752Z"
+  },
+  {
+    "id": "usr_lead_1791306430277_avsg",
+    "name": "joias",
+    "url": "https://www.instagram.com/carolmoreiraacessorios/",
+    "location": "sao paulo",
+    "niche": "Joias & Semijoias",
+    "platform": "Sem site (Apenas WhatsApp)",
+    "ticket": 250,
+    "visits": 5000,
+    "whatsapp": "",
+    "instagram": "",
+    "email": "",
+    "starred": false,
+    "status": "Em Contato",
+    "notes": "Lead criado manualmente no dia 06/10/2026.",
+    "createdAt": "2026-10-06T17:07:10.278Z"
   }
 ]
