@@ -219,5 +219,22 @@
     "status": "Em Contato",
     "notes": "Lead criado manualmente no dia 06/10/2026.",
     "createdAt": "2026-10-06T17:46:42.516Z"
+  },
+  {
+    "id": "usr_lead_1791308868875_k5ep",
+    "name": "comida fit",
+    "url": "https://www.instagram.com/wg.frutaseverduras/",
+    "location": "santa catarina",
+    "niche": "Alimentos & Bebidas",
+    "platform": "Sem site (Apenas WhatsApp)",
+    "ticket": 250,
+    "visits": 5000,
+    "whatsapp": "",
+    "instagram": "",
+    "email": "",
+    "starred": false,
+    "status": "Em Contato",
+    "notes": "Lead criado manualmente no dia 06/10/2026.",
+    "createdAt": "2026-10-06T17:47:48.875Z"
   }
 ]
