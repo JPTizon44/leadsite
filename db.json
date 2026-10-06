@@ -151,5 +151,22 @@
     "status": "Em Contato",
     "notes": "Lead criado manualmente no dia 06/10/2026.",
     "createdAt": "2026-10-06T17:12:05.450Z"
+  },
+  {
+    "id": "usr_lead_1791308367017_unjv",
+    "name": "joias",
+    "url": "https://www.instagram.com/4me.acessorios/",
+    "location": "sao paulo",
+    "niche": "Joias & Semijoias",
+    "platform": "Sem site (Apenas WhatsApp)",
+    "ticket": 250,
+    "visits": 5000,
+    "whatsapp": "",
+    "instagram": "",
+    "email": "",
+    "starred": false,
+    "status": "Em Contato",
+    "notes": "Lead criado manualmente no dia 06/10/2026.",
+    "createdAt": "2026-10-06T17:39:27.017Z"
   }
 ]
