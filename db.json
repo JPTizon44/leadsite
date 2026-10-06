@@ -287,5 +287,22 @@
     "status": "Em Contato",
     "notes": "Lead criado manualmente no dia 06/10/2026.",
     "createdAt": "2026-10-06T17:57:07.613Z"
+  },
+  {
+    "id": "usr_lead_1791309602683_3402",
+    "name": "acessorios",
+    "url": "https://www.instagram.com/colorindobies/",
+    "location": "",
+    "niche": "Utensílios & Personalizados",
+    "platform": "Sem site (Apenas WhatsApp)",
+    "ticket": 250,
+    "visits": 5000,
+    "whatsapp": "",
+    "instagram": "",
+    "email": "",
+    "starred": false,
+    "status": "Em Contato",
+    "notes": "Lead criado manualmente no dia 06/10/2026.",
+    "createdAt": "2026-10-06T18:00:02.684Z"
   }
 ]
